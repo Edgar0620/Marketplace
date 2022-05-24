@@ -10,40 +10,64 @@ namespace Marketplace.Domain
     {
         private const string DefaultCurrency = "EUR";
 
-        public static Money FromDecimal(decimal amount)=>new Money(amount);
-        public static Money FromString(string amount) => new Money(decimal.Parse(amount));
+        public static Money FromDecimal(decimal amount,string currency, ICurrencyLookup currencyLookup) =>new Money(amount,currency,currencyLookup);
+        public static Money FromString(string amount, string currency, ICurrencyLookup currencyLookup) => new Money(decimal.Parse(amount), currency, currencyLookup);
 
-        protected Money(decimal amount,string currencyCode="EUR")
+        protected Money(decimal amount,string currencyCode, ICurrencyLookup currencyLookup)
         {
-            if (decimal.Round(amount,2)!=amount)
+            if (string.IsNullOrEmpty(currencyCode))
             {
-                throw new ArgumentException(nameof(amount), "Amount cannot have more than two decimals");
+                throw new ArgumentException(nameof(amount), "");
+            }
+            var currency = currencyLookup.FindCurrency(currencyCode);
+            if (!currency.InUse)
+            {
+                throw new ArgumentException(nameof(currency), "");
+            }
+
+            if (decimal.Round(amount,currency.DecimalPlaces)!=amount)
+            {
+                throw new ArgumentException(nameof(amount), "");
             }
             Amount = amount;
-            CurrencyCode = currencyCode;
+            Currency = currency;
+        }
+
+        private Money(decimal amount, CurrencyDetails currency)
+        {
+            Amount = amount;
+            Currency = currency;
+        }
+
+        public Money(decimal amount)
+        {
+            Amount = amount;
         }
 
         public decimal Amount { get; }
-        public string CurrencyCode { get; }
+        public CurrencyDetails Currency { get; }
 
         public Money Add(Money summand) 
         {
-            if (CurrencyCode!=summand.CurrencyCode)
+            if (Currency != summand.Currency)
             {
                 throw new CurrencyMismatchException("不同幣值不能比較");
             }
-            return new Money(Amount+ summand.Amount);
+            return new Money(Amount+ summand.Amount,Currency);
         }
         public Money Subtract(Money summand)
         {
-            if (CurrencyCode != summand.CurrencyCode)
+            if (Currency != summand.Currency)
             {
                 throw new CurrencyMismatchException("不同幣值不能比較");
             }
-            return new Money(Amount - summand.Amount);
+            return new Money(Amount - summand.Amount, Currency);
         }
         public static Money operator +(Money summand1,Money summand2)=>summand1.Add(summand2);
         public static Money operator -(Money minuend,Money subtrahend)=> minuend.Subtract(subtrahend);
+
+        public override string ToString() => $"{Currency.CurrencyCode} {Amount}";
+
         protected override IEnumerable<object> GetAtomicValues()
         {
             yield return Amount;

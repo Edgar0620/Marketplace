@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Marketplace.Domain
 {
-    public class Price:Money
+    public class Price :Money
     {
-        public Price(decimal amount):base(amount)
+        public Price(decimal amount) :base(amount)
         {
             if (amount<0)
             {
