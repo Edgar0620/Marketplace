@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Marketplace.Domain
+namespace Marketplace.Framework
 {
     public abstract class ValueObject
     {
@@ -19,7 +19,7 @@ namespace Marketplace.Domain
 
         protected static bool NotEqualOperator(ValueObject left, ValueObject right)
         {
-            return !(EqualOperator(left, right));
+            return !EqualOperator(left, right);
         }
 
         protected abstract IEnumerable<object> GetAtomicValues();
