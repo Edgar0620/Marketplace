@@ -10,30 +10,30 @@ namespace Marketplace.Domain
     {
         public class ClassifiedAdCreated
         {
-            public Guid Id { get; set; }
-            public Guid OwnerId { get; set; }
+            public ClassifiedAdId Id { get; set; }
+            public UserId OwnerId { get; set; }
         }
 
         public class ClassifiedAdTitleChanged
         {
-            public Guid Id { get; set; }
-            public string Title { get; set; }
+            public ClassifiedAdId Id { get; set; }
+            public ClassifiedAdTitle Title { get; set; }
         }
         public class ClassifiedAdTextUpdated
         {
-            public Guid Id { get; set; }
-            public string Text { get; set; }
+            public ClassifiedAdId Id { get; set; }
+            public ClassifiedAdText Text { get; set; }
         }
         public class ClassifiedAdPriceUpdated
         {
-            public Guid Id { get; set; }
+            public ClassifiedAdId Id { get; set; }
             public decimal Price { get; set; }
             public string CurrencyCode { get; set; }
         }
 
         public class ClassifiedAdSentForReview
         {
-            public Guid Id { get; set; }
+            public ClassifiedAdId Id { get; set; }
         }
     }
 }

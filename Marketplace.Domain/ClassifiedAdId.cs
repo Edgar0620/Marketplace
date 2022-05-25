@@ -9,7 +9,7 @@ namespace Marketplace.Domain
 {
     public class ClassifiedAdId:ValueObject
     {
-        private readonly Guid _value;
+        private Guid _value;
 
         public ClassifiedAdId (Guid value)
         {
@@ -19,6 +19,9 @@ namespace Marketplace.Domain
             }
             _value = value;
         }
+
+        public static implicit operator Guid(ClassifiedAdId self)=>self._value;
+
         protected override IEnumerable<object> GetAtomicValues()
         {
             yield return _value;

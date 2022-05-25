@@ -8,9 +8,11 @@ namespace Marketplace.Domain
 {
     public class Price :Money
     {
-        public Price(decimal amount) :base(amount)
+        
+        
+        public Price(decimal amount, string currency, ICurrencyLookup currencyLookup) : base(amount,currency,currencyLookup)
         {
-            if (amount<0)
+            if (amount < 0)
             {
                 if (amount == default)
                 {
@@ -18,5 +20,9 @@ namespace Marketplace.Domain
                 }
             }
         }
+
+        internal Price(decimal amount, string currencyCode) : base(amount, new CurrencyDetails { CurrencyCode = currencyCode }) { }
+
+        public static Price FromDecimal(decimal amount, string currency, ICurrencyLookup currencyLookup)=>new Price(amount, currency, currencyLookup);
     }
 }

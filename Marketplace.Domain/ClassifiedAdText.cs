@@ -10,34 +10,17 @@ namespace Marketplace.Domain
 {
     public class ClassifiedAdText : ValueObject
     {
-        public static ClassifiedAdText FromString(string title) => new ClassifiedAdText(title);
+        private string Value { get; }
 
-        public static ClassifiedAdText FromHtml(string htmlTitle)
-        {
-            var supportTagsRelpaced = htmlTitle
-                .Replace("<i>", "*")
-                .Replace("</i>", "*")
-                .Replace("<b>", "*")
-                .Replace("</b>", "*");
-            return new ClassifiedAdText(Regex.Replace(supportTagsRelpaced,"<.*?>",string.Empty));
+        internal ClassifiedAdText(string text) => Value = text;
 
-        }
+        public static ClassifiedAdText FromString(string text) => new ClassifiedAdText(text);
 
-        private readonly string _value;
-
-        public ClassifiedAdText(string value)
-        {
-            if (value.Length>100)
-            {
-                throw new ArgumentException("Title cannot be longer that 100 characters", nameof(value));
-            }
-
-            _value = value;
-        }
+        public static implicit operator string(ClassifiedAdText self) => self.Value;
 
         protected override IEnumerable<object> GetAtomicValues()
         {
-            yield return _value;
+            yield return Value;
         }
     }
 }

@@ -20,6 +20,8 @@ namespace Marketplace.Domain
 
             _value = value;
         }
+
+        public static implicit operator Guid(UserId self) => self._value;
         protected override IEnumerable<object> GetAtomicValues()
         {
             yield return _value;

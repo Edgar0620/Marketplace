@@ -22,7 +22,7 @@ namespace Marketplace.Tests
         {
             _classifiedAd.SetTitle(ClassifiedAdTitle.FromString("Test Ad"));
             _classifiedAd.UpdateText(ClassifiedAdText.FromString("Please buy my stuff"));
-            _classifiedAd.UpdatePrice(new Price(Price.FromDecimal(100.10m, "EUR", new FakeCurrencyLookup()).Amount));
+            _classifiedAd.UpdatePrice(Price.FromDecimal(100.10m, "EUR", new FakeCurrencyLookup()));
             _classifiedAd.RequestToPublish();
 
             Assert.Equal(ClassifiedAd.ClassifiedAdState.PendingReview,
@@ -33,7 +33,7 @@ namespace Marketplace.Tests
         public void Cannot_publish_without_title()
         {
             _classifiedAd.UpdateText(ClassifiedAdText.FromString("Please buy my stuff"));
-            _classifiedAd.UpdatePrice(new Price(Price.FromDecimal(100.10m, "EUR", new FakeCurrencyLookup()).Amount));
+            _classifiedAd.UpdatePrice(Price.FromDecimal(100.10m, "EUR", new FakeCurrencyLookup()));
             Assert.Throws<InvalidEntityStateException>(() =>
             _classifiedAd.RequestToPublish());
         }
@@ -42,7 +42,7 @@ namespace Marketplace.Tests
         public void Cannot_publish_without_text()
         {
             _classifiedAd.SetTitle(ClassifiedAdTitle.FromString("Test Ad"));
-            _classifiedAd.UpdatePrice(new Price(Price.FromDecimal(100.10m, "EUR", new FakeCurrencyLookup()).Amount));
+            _classifiedAd.UpdatePrice(Price.FromDecimal(100.10m, "EUR", new FakeCurrencyLookup()));
             Assert.Throws<InvalidEntityStateException>(() =>
             _classifiedAd.RequestToPublish());
         }
@@ -61,7 +61,7 @@ namespace Marketplace.Tests
         {
             _classifiedAd.SetTitle(ClassifiedAdTitle.FromString("Test Ad"));
             _classifiedAd.UpdateText(ClassifiedAdText.FromString("Please buy my stuff"));
-            _classifiedAd.UpdatePrice(new Price(Price.FromDecimal(0.0m, "EUR", new FakeCurrencyLookup()).Amount));
+            _classifiedAd.UpdatePrice(Price.FromDecimal(0.0m, "EUR", new FakeCurrencyLookup()));
             Assert.Throws<InvalidEntityStateException>(() =>
             _classifiedAd.RequestToPublish());
         }

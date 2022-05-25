@@ -10,7 +10,11 @@ namespace Marketplace.Domain
 {
     public class ClassifiedAdTitle : ValueObject
     {
-        public static ClassifiedAdTitle FromString(string title) => new ClassifiedAdTitle(title);
+        public static ClassifiedAdTitle FromString(string title)
+        {
+            CheckVaildity(title);
+            return new ClassifiedAdTitle(title);
+        }
 
         public static ClassifiedAdTitle FromHtml(string htmlTitle)
         {
@@ -19,25 +23,31 @@ namespace Marketplace.Domain
                 .Replace("</i>", "*")
                 .Replace("<b>", "*")
                 .Replace("</b>", "*");
-            return new ClassifiedAdTitle(Regex.Replace(supportTagsRelpaced,"<.*?>",string.Empty));
+
+            var value = Regex.Replace(supportTagsRelpaced, "<.*?>", string.Empty);
+            CheckVaildity(value);
+
+            return new ClassifiedAdTitle(value);
 
         }
 
-        private readonly string _value;
+        public string Value { get; }
 
-        public ClassifiedAdTitle(string value)
+        internal ClassifiedAdTitle(string value)=>Value = value;
+
+        public static implicit operator string(ClassifiedAdTitle titel) => titel.Value;
+
+        private static void CheckVaildity(string value)
         {
-            if (value.Length>100)
+            if (value.Length > 100)
             {
                 throw new ArgumentException("Title cannot be longer that 100 characters", nameof(value));
             }
-
-            _value = value;
         }
 
         protected override IEnumerable<object> GetAtomicValues()
         {
-            yield return _value;
+            yield return Value;
         }
     }
 }

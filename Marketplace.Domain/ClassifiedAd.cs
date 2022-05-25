@@ -6,44 +6,80 @@ using System.Threading.Tasks;
 
 namespace Marketplace.Domain
 {
-    public class ClassifiedAd
+    public class ClassifiedAd : Entity
     {
         public ClassifiedAdId Id { get; private set; }
-        
+        public UserId OwnerId;
+        public ClassifiedAdTitle Title { get; private set; }
+        public ClassifiedAdText Text { get; private set; }
+        public Price Price { get; private set; }
+        public ClassifiedAdState State { get; private set; }
+        public UserId ApproveBy { get; private set; }
 
-        public ClassifiedAd(ClassifiedAdId id, UserId owerId)
+        public ClassifiedAd(ClassifiedAdId id, UserId owerId) =>
+            Apply(new Events.ClassifiedAdCreated
+            {
+                Id = id,
+                OwnerId = owerId
+            });
+
+
+        public void SetTitle(ClassifiedAdTitle title) =>
+            Apply(new Events.ClassifiedAdTitleChanged
+            {
+                Id = Id,
+                Title = title
+            });
+
+
+        public void UpdateText(ClassifiedAdText text) =>
+            Apply(new Events.ClassifiedAdTextUpdated
+            {
+                Id = Id,
+                Text = text
+            });
+
+
+        public void UpdatePrice(Price price) =>
+            Apply(new Events.ClassifiedAdPriceUpdated
+            {
+                Id = Id,
+                Price = price.Amount,
+                CurrencyCode = price.Currency.CurrencyCode
+            });
+
+
+        public void RequestToPublish() =>
+            Apply(new Events.ClassifiedAdSentForReview
+            {
+                Id = Id
+            });
+
+        protected override void When(object @event)
         {
-            Id = id;
-            OwnerId = owerId;
-            State = ClassifiedAdState.Inactive;
-            EnsureValidState();
+            switch (@event)
+            {
+                case Events.ClassifiedAdCreated e:
+                    Id = new ClassifiedAdId(e.Id);
+                    OwnerId = new UserId(e.OwnerId);
+                    State = ClassifiedAdState.Inactive;
+                    break;
+                case Events.ClassifiedAdTitleChanged e:
+                    Title = new ClassifiedAdTitle(e.Title);
+                    break;
+                case Events.ClassifiedAdTextUpdated e:
+                    Text = new ClassifiedAdText(e.Text);
+                    break;
+                case Events.ClassifiedAdPriceUpdated e:
+                    Price = new Price(e.Price,e.CurrencyCode);
+                    break;
+                case Events.ClassifiedAdSentForReview e:
+                    State = ClassifiedAdState.PendingReview;
+                    break;
+            }
         }
 
-        public void SetTitle(ClassifiedAdTitle title)
-        {
-            Title = title;
-            EnsureValidState();
-        }
-
-        public void UpdateText(ClassifiedAdText text)
-        {
-            Text = text;
-            EnsureValidState();
-        }
-
-        public void UpdatePrice(Price price)
-        {
-            Price = price;
-            EnsureValidState();
-        }
-
-        public void RequestToPublish()
-        {
-            State = ClassifiedAdState.PendingReview;
-            EnsureValidState();
-        }
-
-        private void EnsureValidState()
+        protected override void EnsureValidState()
         {
             var valid =
                 Id != null &&
@@ -66,12 +102,7 @@ namespace Marketplace.Domain
                 throw new InvalidEntityStateException(this, $"Post-checks failed in state {State}");
         }
 
-        public UserId OwnerId;
-        public ClassifiedAdTitle Title { get;private set; }
-        public ClassifiedAdText Text { get; private set; }
-        public Price Price { get; private set; }
-        public ClassifiedAdState State { get; private set; }
-        public UserId ApproveBy { get; private set; }
+
 
         public enum ClassifiedAdState
         {
