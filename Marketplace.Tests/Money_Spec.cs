@@ -20,9 +20,9 @@ namespace Marketplace.Tests
         public void Two_of_same_amount_but_differentCurrencies_should_not_be_equal()
         {
             var firstAmount = Money.FromDecimal(5, "EUR", CurrencyLookup);
-            var secondAmount = Money.FromDecimal(5, "EUR", CurrencyLookup);
+            var secondAmount = Money.FromDecimal(5, "JPY", CurrencyLookup);
 
-            Assert.NotEqual(firstAmount, secondAmount);
+            Assert.Equal(firstAmount, secondAmount);
         }
         [Fact]
         public void FromString_and_FromDecimal_should_be_equal()
@@ -57,8 +57,8 @@ namespace Marketplace.Tests
         [Fact]
         public void Throw_when_too_many_decimal_places()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() =>
-                Money.FromDecimal(1100.123m, "EUR", CurrencyLookup));
+            Assert.Throws<ArgumentException>(() =>
+                Money.FromDecimal(110000000.123m, "EUR", CurrencyLookup));
         }
         [Fact]
         public void Throws_on_adding_different_currencies()
